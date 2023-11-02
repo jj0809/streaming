@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+  </head>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"
+    integrity="sha512-zoJXRvW2gC8Z0Xo3lBbao5+AS3g6YWr5ztKqaicua11xHo+AvE1b0lT9ODgrHTmNUxeCw0Ry4BGRYZfXu70weg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"></script>
+  <body>
+    <div class="container">
+      {#
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+          <h3 class="mt-5">Live Streaming</h3>
+          <img src="{{ url_for('video_feed2') }}" width="50%" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+          <h3 class="mt-5">Stream video</h3>
+          <img src="{{ url_for('video_feed') }}" width="50%" />
+        </div>
+      </div>
+      #}
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+          <h3 class="mt-5">SOCKETIO IMAGES</h3>
+          <img
+            id="imagebox"
+            src="../static/loading.gif"
+            width="320"
+            height="240" />
+        </div>
+      </div>
+    </div>
+    <script>
+      function onOpenCvReady() {
+        console.log("OpenCV.js is readyyyyy.");
+      }
+
+      $(document).ready(function () {
+        console.log("document ready");
+
+        socket = io("http://localhost:5000");
+        socket.on("connect", function () {
+          console.log("Connected...!", socket.connected);
+          socket.emit("test", "data");
+        });
+        socket.on("response_back", function (image) {
+          var blob = new Blob([image], { type: "image/jpeg" });
+          // Blob 객체를 URL로 생성
+          var imageUrl = URL.createObjectURL(blob);
+          // 이미지 요소의 src 속성을 설정
+          const image_id = document.getElementById("imagebox");
+          image_id.src = imageUrl;
+        });
+      });
+    </script>
+    <script
+      src="../static/js/opencv.js"
+      onload="onOpenCvReady();"
+      type="text/javascript"></script>
+  </body>
+</html>
